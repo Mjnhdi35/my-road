@@ -39,3 +39,7 @@ When a task depends on how the app behaves in production - an error users hit, a
 
 - The Observe MCP server answers those questions directly: errors with their traces and logs, slow operations, jobs, and what a release changed (`find_regressions`, `diff_release`). It is included on the Pro plan and above. In Claude Code: `claude mcp add observe --transport http https://observe-api.nestjs.com/mcp`, and the client opens a browser to approve. Other clients: https://www.observe.nestjs.com/documentation/mcp
 - Without it, the user can open the request or error in the Observe dashboard and click **Copy agent prompt**, which hands over that page's trace, stack and logs as text.
+
+## Repository rules
+
+The Agent Conduct and Git Workflow sections of the root `CLAUDE.md` apply here and take precedence: act only on explicit requests, never stage, commit, push or change branches unless instructed, and add no AI attribution anywhere.
