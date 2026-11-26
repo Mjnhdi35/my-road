@@ -5,5 +5,13 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "scripts": {}
+  "scripts": {},
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^26.6.11",
+    "typescript": "^6.0.3"
+  }
 }
