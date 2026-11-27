@@ -51,6 +51,8 @@ The `nestjs*` skills are vendor-managed by `@nestjs/skills` (each folder has a `
 - For significant or architectural work: inspect the relevant code, propose the simplest option with alternatives and a verification plan, get approval, then implement only the approved scope.
 - Stay in scope: no unrelated refactoring, formatting, reordering, whitespace or line-ending changes. Preserve each file's style and line endings.
 - No AI or agent attribution anywhere: commits, pull requests, branch names, code comments or project documentation. Only agent configuration (`CLAUDE.md`, `.claude/`) may name the tool. Commit and pull request attribution is also disabled in `.claude/settings.json`.
+- Never write code comments of any kind in source, test or config code: no explanatory, JSDoc, `TODO`, `FIXME` or commented-out code. Express intent through names and structure, and put explanations in commit messages, pull requests or documentation. Do not remove existing comments unless asked.
+- Never read, search or list `node_modules/`, `dist/`, `.next/`, `coverage/` or other build output. Learn a dependency's API from its official docs for the installed version, and judge build results by command output.
 - Leave no agent artifacts in the repository (scratch files, notes, logs, plans, temporary scripts). Keep temporary files outside it and delete them when done.
 - Before finishing a task that changed files, run `git status` and `git diff` and report the touched files and what remains unstaged, uncommitted or unpushed.
 
