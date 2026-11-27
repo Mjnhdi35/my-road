@@ -1,166 +1,65 @@
-CLAUDE.md
+# CLAUDE.md
 
-This file defines the working rules and architectural boundaries for Claude Code in this repository.
+Monorepo on npm workspaces, built incrementally toward self-hosted operation on Linux VPS infrastructure.
 
-Project Context
+- `apps/server`: NestJS 12 API (Express, ESM, Vitest).
+- `apps/web`: Next.js 16 and React 19 frontend (App Router, Tailwind 4).
 
-This project is being built from the ground up and developed incrementally.
+Each app's `CLAUDE.md` loads when you work in that app and holds framework guidance only. Agent conduct and Git rules are defined here and nowhere else.
 
-The long-term goal is a self-hosted Node.js monorepo operated on Linux VPS infrastructure.
+## Decisions
 
-The repository currently contains:
+- Classify architectural information as APPROVED, IN PROGRESS, UNDECIDED or PROPOSED. Only APPROVED and IN PROGRESS items are requirements. When code differs from an approved decision, report the discrepancy before changing it. When unsure, ask.
+- Always distinguish the current implementation from intended future architecture. Deployment architecture is UNDECIDED; Docker may be used in development.
+- Do not add frameworks, libraries, tools, infrastructure, shared packages or abstractions without a justified need and explicit approval.
+- Prefer simple, self-hostable, debuggable solutions. Do not assume managed cloud services or container orchestration. Weigh security, resource use, backup, monitoring and rollback for infrastructure choices.
+- Check the official docs for the installed version before relying on an API. Never assume undocumented behavior or invent conventions.
+- Keep documentation consistent with the implementation and approved decisions, record decisions with their rationale, and never document proposals as established architecture.
+- Never deploy, modify production infrastructure or data, or expose or commit secrets without explicit authorization.
 
-apps/server — NestJS backend API.
-apps/web — Next.js frontend.
+## Commands
 
-Docker images and containers may be used during development and early deployment. The long-term deployment architecture is not yet fully defined.
+Run from the repository root. There is one root `package-lock.json` and dependencies are hoisted to the root `node_modules/`.
 
-Always distinguish the current implementation from the intended future architecture.
+- Lint everything: `npm run lint`
+- Lint the server with type-aware rules: `npm run lint -w server`
+- Check formatting: `npm run format:check`, or `npx oxfmt --check <files>`; format files: `npx oxfmt <files>`
+- Typecheck: `npx tsc --noEmit -p apps/server` and `npx tsc --noEmit -p apps/web`
+- Server tests: `npm test -w server` (unit), `npm run test:e2e -w server` (e2e)
+- Server build: `npm run build -w server`
 
-Engineering Principles
-Do not introduce frameworks, libraries, tools, or infrastructure without a justified requirement and explicit approval.
-Do not independently change approved architectural decisions.
-Do not create unnecessary abstractions, shared packages, or generic frameworks prematurely.
-Prefer simple, maintainable, self-hostable, and debuggable solutions.
-Do not expand the requested scope without permission.
-Check official documentation for the exact installed framework and library versions before implementation.
-Never assume undocumented behavior or invent architectural conventions.
-Architecture Decision Status
+## Gotchas
 
-Classify architectural information into four states:
+- oxfmt is the only formatter. `npm run format:check` already fails on most existing files, so format only the files you change and never reformat the whole repository. Do not run `npm run format -w server`: it is leftover Prettier and conflicts with oxfmt.
+- Root `npm run lint` does not pass `--type-aware`, so rules such as `typescript/no-floating-promises` run only through `npm run lint -w server`.
+- `apps/web` has no tests yet.
+- oxlint and oxfmt ignore `.claude/`.
 
-APPROVED — Explicitly agreed decisions.
-IN PROGRESS — Currently being implemented.
-UNDECIDED — Not yet agreed upon.
-PROPOSED — Suggestions awaiting approval.
+## Verification
 
-Never treat PROPOSED or UNDECIDED items as implementation requirements.
+Every change needs a check that proves it. Run the relevant commands above for each app you touched, report their results as evidence, and state what could not be verified.
 
-When implementation differs from an approved decision, identify the discrepancy before changing it.
+## Skills
 
-Working Method
+Repository skills live only in the root `.claude/skills/`. Never create skill folders inside an app. Do not copy skill content into `CLAUDE.md` files.
 
-For significant tasks:
+The `nestjs*` skills are vendor-managed by `@nestjs/skills` (each folder has a `.nestjs-skills` marker): do not edit them. To update them, run `npx @nestjs/skills add --agent claude` from the repository root, never from `apps/server`.
 
-Inspect relevant source code, configuration, and documentation.
-Understand existing dependencies and architectural boundaries.
-Identify risks and potential impact.
-Propose the simplest viable implementation and relevant alternatives.
-Explain how the changes will be verified.
-Obtain approval before significant architectural changes.
-Implement only the approved scope.
-Report changes, verification results, and remaining limitations.
+## Agent conduct
 
-Small requested changes that follow established conventions may proceed without a separate proposal. Nothing proceeds unless it was requested (see Agent Conduct).
+- Act only on what the current prompt explicitly requests. Suggestions are fine; acting on one needs the user's go-ahead. Ask before acting when a request is ambiguous or has side effects (installing packages, migrations, state-changing network calls, deleting files).
+- For significant or architectural work: inspect the relevant code, propose the simplest option with alternatives and a verification plan, get approval, then implement only the approved scope.
+- Stay in scope: no unrelated refactoring, formatting, reordering, whitespace or line-ending changes. Preserve each file's style and line endings.
+- No AI or agent attribution anywhere: commits, pull requests, branch names, code comments or project documentation. Only agent configuration (`CLAUDE.md`, `.claude/`) may name the tool. Commit and pull request attribution is also disabled in `.claude/settings.json`.
+- Leave no agent artifacts in the repository (scratch files, notes, logs, plans, temporary scripts). Keep temporary files outside it and delete them when done.
+- Before finishing a task that changed files, run `git status` and `git diff` and report the touched files and what remains unstaged, uncommitted or unpushed.
 
-Every meaningful change must have an appropriate verification strategy.
+## Git
 
-Infrastructure & Production Safety
-
-The project prioritizes independent operation on Linux VPS infrastructure.
-
-Consider operational complexity, security, resource consumption, reliability, backup and recovery, monitoring, and rollback when evaluating infrastructure decisions.
-
-Do not assume managed cloud services or container orchestration platforms are required.
-Do not deploy to a VPS or modify production infrastructure without explicit authorization.
-Do not expose secrets or commit environment-specific credentials.
-Do not modify production data without explicit authorization.
-Documentation
-
-Keep documentation consistent with actual implementation and approved decisions.
-
-Update relevant architecture documentation when an approved decision changes.
-Document important decisions and their rationale.
-Avoid duplicating information already maintained in module-level documentation.
-Clearly distinguish current implementation from future plans.
-Do not document proposals as established architecture.
-Repository Guidance
-Inspect the relevant app's CLAUDE.md and AGENTS.md before working in that app.
-apps/server/CLAUDE.md references its local AGENTS.md.
-Follow the Next.js-specific instructions in apps/web/AGENTS.md.
-Each application currently has its own npm configuration and dependency lockfile.
-Run application commands from the corresponding app directory.
-Agent conduct and Git conventions are repository-wide and defined only in the Agent Conduct and Git Workflow sections below. App-level CLAUDE.md, AGENTS.md and skills hold framework guidance only and must not redefine them.
-
-When uncertain about an architectural decision, ask before proceeding.
-
-Agent Conduct
-
-These rules apply to every coding agent working in this repository and take precedence over default agent behaviour. Where another instruction in this file or an app-level file is less strict, this section wins.
-
-Scope and confirmation
-Act only on what the user explicitly requests in the current prompt. Do not generate code, edit files, refactor, reformat or run extra tasks that were not requested.
-Suggestions are allowed in replies. Acting on a suggestion requires the user's explicit go-ahead.
-When a request is ambiguous, or an action has side effects (installing packages, running migrations, state-changing network calls, deleting files), stop and ask before acting.
-Keep every change strictly within the requested scope: no unrelated formatting, reordering, whitespace or line-ending changes. Preserve each file's existing style and line endings.
-
-Git and worktree actions
-Never stage, commit, push, create, switch, rename or delete branches, or create, modify or remove worktrees, unless the user explicitly instructs that action in the current request. Approval of one action does not extend to later ones.
-Never touch another worktree or another session's branch.
-
-No authorship traces
-Never add AI or agent attribution anywhere: no co-author trailers, commit or pull request footers, session IDs or links, or model or tool names in commits, pull request titles or descriptions, branch names, code comments or project documentation.
-The only exception is agent configuration files (CLAUDE.md, AGENTS.md and .claude/), which necessarily name the tool they configure.
-Do not leave agent artifacts in the repository: no scratch files, notes, logs, plans or temporary scripts. Keep temporary files outside the repository and remove them when the task is done.
-Do not leave leftover worktrees. Remove a worktree you created only after the user confirms its work is merged or no longer needed, and never one with uncommitted or unpushed changes. Desktop-managed session worktrees are removed by archiving the session in the app.
-
-Reporting
-Before finishing any task that changed files, run git status and git diff, and report exactly which files were touched and what remains unstaged, uncommitted or unpushed.
-
-Git Workflow
-
-These rules apply to every app and every session in this repository.
-
-Remote and branches
-Use the configured origin remote (git@github.com:Mjnhdi35/my-road.git).
-The default branch is main. Base new work on the latest origin/main.
-main is protected: never commit or push to it directly. All changes reach main through a pull request.
-
-Branch naming
-Use lowercase kebab-case with one of these prefixes:
-feature/<issue-number>-<description> (example: feature/101-user-auth)
-fix/<issue-number>-<description> (example: fix/102-payment-error)
-hotfix/<description>
-refactor/<description> (example: refactor/database-layer)
-docs/<description> (example: docs/api-documentation)
-test/<description>
-chore/<description> (example: chore/update-dependencies)
-Include the GitHub issue number when one exists; feature/ and fix/ branches should always have one.
-Never put Claude, AI, model names or session IDs in a branch name, and never choose the claude/ prefix yourself.
-If the current task branch already follows this convention, reuse it instead of creating another.
-Never rename, delete or reset a branch that belongs to another session or worktree.
-Create, switch, rename or delete branches only when the user explicitly instructs it.
-
-Commits
-Use Conventional Commits: <type>: <short description>, in lowercase imperative mood.
-Allowed types: feat, fix, refactor, test, docs, chore, perf, build, ci.
-Examples: feat: add user authentication, fix: handle payment timeout, perf: optimize database queries.
-Make one logical change per commit, with a short descriptive message.
-Stage, commit or push only when the user explicitly instructs it.
-Never amend, rebase or otherwise rewrite existing commits unless explicitly asked.
-Keep the user's existing Git identity: never change user.name or user.email.
-No AI attribution: no Co-Authored-By trailers, no "Generated with Claude Code" footers, no session links. This is enforced by the attribution setting in .claude/settings.json.
-Never skip hooks (--no-verify) or bypass commit signing.
-
-Pull requests
-Open pull requests against main on origin.
-Use a descriptive title in Conventional Commits form, for example feat: add user authentication.
-Link the GitHub issue in the description (Closes #101) when one exists.
-No AI attribution in pull request titles or descriptions.
-Never merge a pull request, or enable auto-merge, without the user's explicit approval.
-Never force push (including --force-with-lease) to any branch.
-
-Worktrees
-Create a worktree only when the user explicitly instructs it.
-Use one worktree per task, each in its own working directory.
-Create worktrees outside the repository, in ../my-road-worktrees/, named after the branch with / replaced by -:
-git worktree add ../my-road-worktrees/feature-101-user-auth -b feature/101-user-auth origin/main
-Do not create worktrees inside the repository unless explicitly asked.
-Never switch branches in a worktree that belongs to another task.
-Never reset, clean or stash-pop in another worktree. The stash is shared by all worktrees: use a uniquely named stash entry, or a temporary commit, and never a bare git stash pop.
-Never remove the current worktree, or any worktree with uncommitted or unpushed changes. Check git -C <path> status first.
-
-Claude Desktop-managed worktrees
-Claude Desktop creates its own session worktrees in .claude/worktrees/ on branches named claude/<session-name>. The app sets the name and location; these instructions cannot rename or move them.
-Treat such a branch as a temporary session branch. Do not rename it or remove its worktree from inside the session.
-When the work should be pushed or opened as a pull request, ask the user before creating a correctly named branch for it (for example git switch -c chore/<description>).
+- Never stage, commit, push, create, switch, rename or delete branches, or create, modify or remove worktrees unless the current request explicitly instructs it. Approval of one action does not extend to later ones. Never touch another session's worktree or branch.
+- Remote is `origin` (`git@github.com:Mjnhdi35/my-road.git`), default branch `main`. Never commit or push to `main` directly; changes reach it through a pull request. Base new work on the latest `origin/main`.
+- Branches use lowercase kebab-case: `feature/<issue>-<description>`, `fix/<issue>-<description>` (issue number required), `hotfix/`, `refactor/`, `docs/`, `test/` or `chore/<description>`. Include the issue number whenever one exists. Never use the `claude/` prefix or AI, model or session names. Reuse the current branch if it already follows this convention.
+- Commits use Conventional Commits, `<type>: <description>` in lowercase imperative mood, with types `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `build`, `ci`. One logical change per commit. Never amend, rebase or rewrite commits unless asked, never change `user.name` or `user.email`, and never use `--no-verify` or bypass signing.
+- Pull requests target `main` on `origin`, with a Conventional Commits title and `Closes #<issue>` when an issue exists. Never merge or enable auto-merge without explicit approval. Never force push, including `--force-with-lease`.
+- Worktrees: create one only when instructed, one per task, outside the repository in `../my-road-worktrees/`, named after the branch with `/` replaced by `-`, for example `git worktree add ../my-road-worktrees/feature-101-user-auth -b feature/101-user-auth origin/main`. Never reset, clean or stash-pop in another worktree; the stash is shared, so use a uniquely named entry or a temporary commit. Remove only a worktree you created, after the user confirms its work is merged or unneeded, and never one with uncommitted or unpushed changes (check `git -C <path> status`).
+- Claude Desktop session worktrees live in `.claude/worktrees/` on `claude/<session-name>` branches managed by the app. Do not rename them or remove them from inside the session; archiving the session removes them. Before pushing or opening a pull request from one, ask the user before creating a correctly named branch.

@@ -1,9 +1,33 @@
 {
   "name": "my-road",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "license": "ISC",
   "author": "",
+  "workspaces": [
+    "apps/*"
+  ],
   "type": "commonjs",
-  "scripts": {}
+  "scripts": {
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "verify": "npm run lint && npm run verify --workspaces",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.11",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.2",
+    "oxfmt": "^0.80.0",
+    "oxlint": "^1.95.0",
+    "oxlint-tsgolint": "^7.0.2009",
+    "typescript": "^6.0.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": "oxlint",
+    "*": "oxfmt --no-error-on-unmatched-pattern"
+  }
 }
